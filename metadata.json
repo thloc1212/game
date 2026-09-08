@@ -1,0 +1,6 @@
+{
+  "name": "TechPoly Minigames",
+  "description": "Bộ sưu tập 15 trò chơi phản xạ, tốc độ và trí tuệ TechPoly với chế độ chọn game và ngẫu nhiên.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

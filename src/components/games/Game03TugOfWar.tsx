@@ -19,7 +19,10 @@ export const Game03TugOfWar: React.FC<Props> = ({ isPlaying, onFinish, timeLeft 
     if (!isPlaying) return;
     const interval = setInterval(() => {
       setRopePosition((prev) => {
-        const next = prev + 2.0 + Math.random() * 1.2;
+        // The CPU sometimes yanks the rope much harder than its normal pull.
+        const isPowerBurst = Math.random() < 0.16;
+        const pullForce = 2.4 + Math.random() * 1.5 + (isPowerBurst ? 3.2 + Math.random() * 2.3 : 0);
+        const next = prev + pullForce;
         if (next >= 100) {
           sounds.playFail();
           onFinish(false, 'CPU đã kéo cờ vượt qua vạch của họ!');
@@ -37,7 +40,7 @@ export const Game03TugOfWar: React.FC<Props> = ({ isPlaying, onFinish, timeLeft 
     sounds.playTap();
 
     setRopePosition((prev) => {
-      const next = prev - 4.8;
+      const next = prev - 4.6;
       if (next <= -100) {
         sounds.playSuccess();
         onFinish(true, 'Tuyệt vời! Bạn đã kéo phăng đối thủ qua vạch chiến thắng!');

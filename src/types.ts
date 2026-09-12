@@ -1,4 +1,4 @@
-export type GameCategory = 'all' | 'speed' | 'reflex' | 'timing' | 'brain' | 'coop';
+export type GameCategory = 'all' | 'speed' | 'reflex' | 'timing' | 'brain';
 
 export interface GameMetadata {
   id: string;
@@ -7,7 +7,7 @@ export interface GameMetadata {
   mechanic: string;
   duration: number; // seconds
   reward: number; // tokens
-  category: 'speed' | 'reflex' | 'timing' | 'brain' | 'coop';
+  category: 'speed' | 'reflex' | 'timing' | 'brain';
   categoryLabel: string;
   objective: string;
   rules: string;

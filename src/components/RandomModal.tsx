@@ -66,7 +66,7 @@ export const RandomModal: React.FC<Props> = ({ isOpen, games, onClose, onSelectG
           {isRolling ? 'Đang quay ngẫu nhiên...' : 'Trò chơi được chọn!'}
         </h3>
         <p className="text-xs text-slate-400 mb-6">
-          Hệ thống TechPoly Roulette đang bốc thăm ngẫu nhiên 1 trong 15 thử thách
+          Hệ thống TechPoly Roulette đang bốc thăm ngẫu nhiên 1 trong {games.length} thử thách
         </p>
 
         {/* Display Card */}

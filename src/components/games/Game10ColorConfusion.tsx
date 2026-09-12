@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Palette, CheckCircle2 } from 'lucide-react';
+import { Palette } from 'lucide-react';
 import { sounds } from '../../utils/sound';
 
 interface Props {
@@ -19,10 +19,14 @@ interface ColorDef {
 
 const COLOR_PALETTE: ColorDef[] = [
   { id: 'red', name: 'ĐỎ', tailwindClass: 'text-red-500', hex: '#ef4444', buttonClass: 'bg-red-500/20 text-red-300 border-red-500/40 hover:bg-red-500/30', keyNum: '1' },
-  { id: 'green', name: 'XANH LÁ', tailwindClass: 'text-emerald-400', hex: '#34d399', buttonClass: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30', keyNum: '2' },
+  { id: 'green', name: 'LỤC', tailwindClass: 'text-emerald-400', hex: '#34d399', buttonClass: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30', keyNum: '2' },
   { id: 'yellow', name: 'VÀNG', tailwindClass: 'text-yellow-400', hex: '#facc15', buttonClass: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/40 hover:bg-yellow-500/30', keyNum: '3' },
-  { id: 'blue', name: 'XANH DƯƠNG', tailwindClass: 'text-sky-400', hex: '#38bdf8', buttonClass: 'bg-sky-500/20 text-sky-300 border-sky-500/40 hover:bg-sky-500/30', keyNum: '4' },
+  { id: 'blue', name: 'LAM', tailwindClass: 'text-sky-400', hex: '#38bdf8', buttonClass: 'bg-sky-500/20 text-sky-300 border-sky-500/40 hover:bg-sky-500/30', keyNum: '4' },
+  { id: 'purple', name: 'TÍM', tailwindClass: 'text-purple-400', hex: '#c084fc', buttonClass: 'bg-purple-500/20 text-purple-300 border-purple-500/40 hover:bg-purple-500/30', keyNum: '5' },
+  { id: 'orange', name: 'CAM', tailwindClass: 'text-orange-400', hex: '#fb923c', buttonClass: 'bg-orange-500/20 text-orange-300 border-orange-500/40 hover:bg-orange-500/30', keyNum: '6' },
 ];
+
+const TARGET_SCORE = 10;
 
 export const Game10ColorConfusion: React.FC<Props> = ({ isPlaying, onFinish, timeLeft }) => {
   const [correctCount, setCorrectCount] = useState(0);
@@ -34,12 +38,13 @@ export const Game10ColorConfusion: React.FC<Props> = ({ isPlaying, onFinish, tim
   correctRef.current = correctCount;
 
   const nextQuestion = useCallback(() => {
-    // Pick random text and random distinct (or same) visual color
+    // Six one-word colors and a 90% conflict rate make the Stroop choice less predictable.
     const textIdx = Math.floor(Math.random() * COLOR_PALETTE.length);
-    let colorIdx = Math.floor(Math.random() * COLOR_PALETTE.length);
-    // 70% chance they conflict to make it tricky!
-    if (Math.random() < 0.7 && colorIdx === textIdx) {
-      colorIdx = (colorIdx + 1) % COLOR_PALETTE.length;
+    let colorIdx = textIdx;
+    if (Math.random() < 0.9) {
+      do {
+        colorIdx = Math.floor(Math.random() * COLOR_PALETTE.length);
+      } while (colorIdx === textIdx);
     }
 
     setWordText(COLOR_PALETTE[textIdx].name);
@@ -62,7 +67,7 @@ export const Game10ColorConfusion: React.FC<Props> = ({ isPlaying, onFinish, tim
       setFeedback('✨ Đúng!');
       setTimeout(() => setFeedback(null), 300);
 
-      if (newScore >= 7) {
+      if (newScore >= TARGET_SCORE) {
         sounds.playSuccess();
         onFinish(true, `Phản xạ màu sắc xuất chúng! Đạt ${newScore} lượt chuẩn xác!`);
         return;
@@ -76,14 +81,12 @@ export const Game10ColorConfusion: React.FC<Props> = ({ isPlaying, onFinish, tim
     }
   }, [isPlaying, actualColor.id, nextQuestion, onFinish]);
 
-  // Keyboard shortcut: 1, 2, 3, 4
+  // Keyboard shortcut: 1-6
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isPlaying) return;
-      if (e.key === '1') handleAnswer('red');
-      if (e.key === '2') handleAnswer('green');
-      if (e.key === '3') handleAnswer('yellow');
-      if (e.key === '4') handleAnswer('blue');
+      const selectedColor = COLOR_PALETTE.find((color) => color.keyNum === e.key);
+      if (selectedColor) handleAnswer(selectedColor.id);
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
@@ -92,12 +95,12 @@ export const Game10ColorConfusion: React.FC<Props> = ({ isPlaying, onFinish, tim
   // Timeout check
   useEffect(() => {
     if (isPlaying && timeLeft <= 0) {
-      if (correctRef.current >= 7) {
+      if (correctRef.current >= TARGET_SCORE) {
         sounds.playSuccess();
-        onFinish(true, `Hết giờ! Bạn trả lời đúng ${correctRef.current} lượt (Mục tiêu >= 7).`);
+        onFinish(true, `Hết giờ! Bạn trả lời đúng ${correctRef.current} lượt (Mục tiêu >= ${TARGET_SCORE}).`);
       } else {
         sounds.playFail();
-        onFinish(false, `Hết 15 giây! Chỉ đạt ${correctRef.current}/7 lượt.`);
+        onFinish(false, `Hết 15 giây! Chỉ đạt ${correctRef.current}/${TARGET_SCORE} lượt.`);
       }
     }
   }, [isPlaying, timeLeft, onFinish]);
@@ -112,7 +115,7 @@ export const Game10ColorConfusion: React.FC<Props> = ({ isPlaying, onFinish, tim
           </div>
           <div>
             <div className="text-xs font-semibold text-slate-400">Số Lượt Đúng</div>
-            <div className="text-xl font-black text-fuchsia-400">{correctCount} <span className="text-xs text-slate-500 font-normal">/ 7 lượt</span></div>
+            <div className="text-xl font-black text-fuchsia-400">{correctCount} <span className="text-xs text-slate-500 font-normal">/ {TARGET_SCORE} lượt</span></div>
           </div>
         </div>
 
@@ -141,15 +144,15 @@ export const Game10ColorConfusion: React.FC<Props> = ({ isPlaying, onFinish, tim
         )}
       </div>
 
-      {/* 4 Color Options */}
-      <div className="grid grid-cols-2 gap-3.5 w-full">
+      {/* 6 Color Options */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 w-full">
         {COLOR_PALETTE.map((color) => (
           <button
             key={color.id}
             id={`color-btn-${color.id}`}
             onClick={() => handleAnswer(color.id)}
             disabled={!isPlaying}
-            className={`py-4 px-6 rounded-2xl border-2 font-black text-lg tracking-wider transition-all duration-100 flex items-center justify-between active:scale-95 cursor-pointer shadow-lg ${color.buttonClass}`}
+            className={`py-3 px-4 rounded-2xl border-2 font-black text-base tracking-wider transition-all duration-100 flex items-center justify-between active:scale-95 cursor-pointer shadow-lg ${color.buttonClass}`}
           >
             <span>{color.name}</span>
             <span className="text-xs font-normal opacity-70 px-2 py-0.5 rounded bg-slate-900/60 font-mono">

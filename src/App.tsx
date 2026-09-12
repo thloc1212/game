@@ -117,8 +117,7 @@ export default function App() {
       (activeCategory === 'speed' && game.category === 'speed') ||
       (activeCategory === 'reflex' && game.category === 'reflex') ||
       (activeCategory === 'timing' && game.category === 'timing') ||
-      (activeCategory === 'brain' && game.category === 'brain') ||
-      (activeCategory === 'coop' && game.category === 'coop');
+      (activeCategory === 'brain' && game.category === 'brain');
 
     const matchesSearch =
       game.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -129,12 +128,11 @@ export default function App() {
   });
 
   const categories = [
-    { id: 'all', label: 'Tất cả (15)' },
+    { id: 'all', label: `Tất cả (${GAMES_LIST.length})` },
     { id: 'speed', label: '⚡ Bấm Nhanh' },
     { id: 'reflex', label: '🎯 Phản Xạ' },
     { id: 'timing', label: '⏱️ Canh Giờ' },
     { id: 'brain', label: '🧠 Trí Não & Đố' },
-    { id: 'coop', label: '🤝 Phối Hợp' },
   ];
 
   // If in a game arena, show GameArena
@@ -166,7 +164,7 @@ export default function App() {
               <div className="flex items-center gap-2">
                 <span className="text-base font-black tracking-tight text-white font-mono">TECHPOLY</span>
                 <span className="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 text-[10px] font-black uppercase tracking-wider border border-amber-500/30">
-                  15 MINIGAMES
+                  {GAMES_LIST.length} MINIGAMES
                 </span>
               </div>
               <p className="text-[11px] text-slate-400 font-medium hidden sm:block">
@@ -222,7 +220,7 @@ export default function App() {
               <span>Thử Thách Game Nhanh Dành Riêng Cho Laptop</span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-black text-slate-100 tracking-tight leading-tight mb-2">
-              Bộ Sưu Tập <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-rose-400">15 Minigames</span> TechPoly
+              Bộ Sưu Tập <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-rose-400">{GAMES_LIST.length} Minigames</span> TechPoly
             </h1>
             <p className="text-slate-300 text-sm leading-relaxed mb-4">
               Lựa chọn trực tiếp trò chơi ưa thích hoặc thử vận may với chế độ bốc ngẫu nhiên. Tích lũy token thưởng, thử thách phản xạ và bứt phá kỷ lục!
@@ -310,7 +308,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* Games Grid (15 Minigames) */}
+      {/* Games Grid */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 w-full flex-1 pb-16">
         {filteredGames.length === 0 ? (
           <div className="py-20 text-center flex flex-col items-center">

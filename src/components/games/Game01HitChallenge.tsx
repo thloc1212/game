@@ -8,6 +8,8 @@ interface Props {
   timeLeft: number;
 }
 
+const TARGET_HITS = 75;
+
 export const Game01HitChallenge: React.FC<Props> = ({ isPlaying, onFinish, timeLeft }) => {
   const [hits, setHits] = useState(0);
   const [ripple, setRipple] = useState(false);
@@ -22,9 +24,9 @@ export const Game01HitChallenge: React.FC<Props> = ({ isPlaying, onFinish, timeL
     setTimeout(() => setRipple(false), 80);
     sounds.playTap();
 
-    if (nextHits >= 100) {
+    if (nextHits >= TARGET_HITS) {
       sounds.playSuccess();
-      onFinish(true, `Tuyệt đỉnh! Đạt 100 hit với ${timeLeft.toFixed(1)}s còn lại!`);
+      onFinish(true, `Tuyệt đỉnh! Đạt ${TARGET_HITS} hit với ${timeLeft.toFixed(1)}s còn lại!`);
     }
   }, [isPlaying, onFinish, timeLeft]);
 
@@ -44,14 +46,14 @@ export const Game01HitChallenge: React.FC<Props> = ({ isPlaying, onFinish, timeL
   // Check timeout
   useEffect(() => {
     if (isPlaying && timeLeft <= 0) {
-      if (hitsRef.current < 100) {
+      if (hitsRef.current < TARGET_HITS) {
         sounds.playFail();
-        onFinish(false, `Hết giờ! Bạn đạt ${hitsRef.current}/100 hit.`);
+        onFinish(false, `Hết giờ! Bạn đạt ${hitsRef.current}/${TARGET_HITS} hit.`);
       }
     }
   }, [isPlaying, timeLeft, onFinish]);
 
-  const percentage = Math.min(100, Math.round((hits / 100) * 100));
+  const percentage = Math.min(100, Math.round((hits / TARGET_HITS) * 100));
   const cps = timeLeft < 10 ? ((hits / (10 - timeLeft)) || 0).toFixed(1) : '0.0';
 
   return (
@@ -69,7 +71,7 @@ export const Game01HitChallenge: React.FC<Props> = ({ isPlaying, onFinish, timeL
         </div>
         <div className="text-right">
           <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">Mục tiêu</div>
-          <div className="text-xl font-bold text-slate-100">100 Hit</div>
+          <div className="text-xl font-bold text-slate-100">{TARGET_HITS} Hit</div>
         </div>
       </div>
 
@@ -78,7 +80,7 @@ export const Game01HitChallenge: React.FC<Props> = ({ isPlaying, onFinish, timeL
         {/* Glow effect */}
         <div 
           className="absolute -inset-4 bg-gradient-to-r from-amber-500 to-rose-500 rounded-full blur-xl opacity-30 transition-opacity"
-          style={{ opacity: Math.min(0.8, 0.2 + (hits / 100) * 0.6) }}
+          style={{ opacity: Math.min(0.8, 0.2 + (hits / TARGET_HITS) * 0.6) }}
         />
 
         <button
@@ -94,7 +96,7 @@ export const Game01HitChallenge: React.FC<Props> = ({ isPlaying, onFinish, timeL
             {hits}
           </span>
           <span className="text-xs font-bold uppercase tracking-widest text-amber-100/90 mt-1">
-            / 100 TAP
+            / {TARGET_HITS} TAP
           </span>
         </button>
       </div>

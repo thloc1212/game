@@ -19,9 +19,11 @@ export const Game02SumoBattle: React.FC<Props> = ({ isPlaying, onFinish, timeLef
   useEffect(() => {
     if (!isPlaying) return;
     const interval = setInterval(() => {
-      // CPU pushes player to the left
+      // CPU has occasional explosive pushes, so the player cannot settle into a fixed rhythm.
       setPosition((prev) => {
-        const next = prev - (2.4 + Math.random() * 1.5);
+        const isPowerBurst = Math.random() < 0.18;
+        const pushForce = 2.8 + Math.random() * 1.8 + (isPowerBurst ? 3.5 + Math.random() * 2.5 : 0);
+        const next = prev - pushForce;
         if (next <= -100) {
           sounds.playFail();
           onFinish(false, 'CPU đã đẩy ngã bạn ra khỏi vòng võ đài!');
@@ -41,7 +43,7 @@ export const Game02SumoBattle: React.FC<Props> = ({ isPlaying, onFinish, timeLef
     sounds.playHit();
 
     setPosition((prev) => {
-      const next = prev + 5.2;
+      const next = prev + 5.0;
       if (next >= 100) {
         sounds.playSuccess();
         onFinish(true, 'Xuất sắc! Bạn đã đẩy văng võ sĩ CPU ra khỏi sàn đấu!');

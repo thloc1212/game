@@ -4,22 +4,17 @@ import { ArrowLeft, Volume2, VolumeX, RotateCcw, Dices, Play, Award, AlertCircle
 import { GameMetadata, GameStatus } from '../types';
 import { sounds } from '../utils/sound';
 
-// Import all 15 Minigames
+// Import active minigames
 import { Game01HitChallenge } from './games/Game01HitChallenge';
 import { Game02SumoBattle } from './games/Game02SumoBattle';
 import { Game03TugOfWar } from './games/Game03TugOfWar';
-import { Game04HandSlap } from './games/Game04HandSlap';
 import { Game05RPS } from './games/Game05RPS';
-import { Game06BombBoat } from './games/Game06BombBoat';
 import { Game07BugSmash } from './games/Game07BugSmash';
 import { Game08Stopwatch } from './games/Game08Stopwatch';
 import { Game09MemoryGrid } from './games/Game09MemoryGrid';
 import { Game10ColorConfusion } from './games/Game10ColorConfusion';
-import { Game11SwipeDirection } from './games/Game11SwipeDirection';
 import { Game12Riddles } from './games/Game12Riddles';
 import { Game13QuickCount } from './games/Game13QuickCount';
-import { Game14CatchSignal } from './games/Game14CatchSignal';
-import { Game15PuzzleCoop } from './games/Game15PuzzleCoop';
 
 interface Props {
   game: GameMetadata;
@@ -117,18 +112,13 @@ export const GameArena: React.FC<Props> = ({
       case '100-hit': return <Game01HitChallenge {...props} />;
       case 'sumo-tap': return <Game02SumoBattle {...props} />;
       case 'tug-of-war': return <Game03TugOfWar {...props} />;
-      case 'hand-slap': return <Game04HandSlap {...props} />;
       case 'rock-paper-scissors': return <Game05RPS {...props} />;
-      case 'bomb-the-boat': return <Game06BombBoat {...props} />;
       case 'bug-smash': return <Game07BugSmash {...props} />;
       case 'stop-at-5': return <Game08Stopwatch {...props} />;
       case 'memory-grid': return <Game09MemoryGrid {...props} />;
       case 'color-confusion': return <Game10ColorConfusion {...props} />;
-      case 'swipe-direction': return <Game11SwipeDirection {...props} />;
       case 'smart-riddles': return <Game12Riddles {...props} />;
       case 'quick-count': return <Game13QuickCount {...props} />;
-      case 'catch-the-signal': return <Game14CatchSignal {...props} />;
-      case 'puzzle-coop': return <Game15PuzzleCoop {...props} />;
       default: return <div>Trò chơi đang chuẩn bị...</div>;
     }
   };
@@ -315,7 +305,7 @@ export const GameArena: React.FC<Props> = ({
                 onClick={onBack}
                 className="w-full py-2.5 rounded-xl text-slate-400 hover:text-slate-200 text-xs font-semibold transition-colors cursor-pointer"
               >
-                Trở về danh sách 15 Minigames
+                Trở về danh sách 10 Minigames
               </button>
             </div>
           </div>
@@ -363,7 +353,7 @@ export const GameArena: React.FC<Props> = ({
                 onClick={onBack}
                 className="w-full py-2.5 rounded-xl text-slate-400 hover:text-slate-200 text-xs font-semibold transition-colors cursor-pointer"
               >
-                Trở về danh sách 15 Minigames
+                Trở về danh sách 10 Minigames
               </button>
             </div>
           </div>

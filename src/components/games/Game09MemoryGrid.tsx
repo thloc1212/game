@@ -8,40 +8,40 @@ interface Props {
   timeLeft: number;
 }
 
+const GRID_SIZE = 5;
+const TOTAL_CELLS = GRID_SIZE * GRID_SIZE;
+const TARGET_CELLS = 8;
+const REQUIRED_CORRECT = 7;
+const MEMORIZE_DURATION_MS = 1500;
+
 export const Game09MemoryGrid: React.FC<Props> = ({ isPlaying, onFinish, timeLeft }) => {
   const [targetIndices, setTargetIndices] = useState<number[]>([]);
   const [selectedIndices, setSelectedIndices] = useState<number[]>([]);
   const [phase, setPhase] = useState<'memorize' | 'recall' | 'evaluated'>('memorize');
-  const [memorizeSeconds, setMemorizeSeconds] = useState(2);
+  const [memorizeSeconds, setMemorizeSeconds] = useState(MEMORIZE_DURATION_MS / 1000);
 
-  // Initialize random 6 tiles out of 16 (4x4)
+  // Initialize a denser 5x5 board with 8 targets.
   useEffect(() => {
     const indices: number[] = [];
-    while (indices.length < 6) {
-      const rand = Math.floor(Math.random() * 16);
+    while (indices.length < TARGET_CELLS) {
+      const rand = Math.floor(Math.random() * TOTAL_CELLS);
       if (!indices.includes(rand)) indices.push(rand);
     }
     setTargetIndices(indices);
   }, []);
 
-  // Memorize phase timer (2 seconds)
+  // A shorter preview leaves less time to scan the larger board.
   useEffect(() => {
     if (!isPlaying || targetIndices.length === 0 || phase !== 'memorize') return;
 
     sounds.playWhoosh();
-    const interval = setInterval(() => {
-      setMemorizeSeconds((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          setPhase('recall');
-          sounds.playTick();
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
+    const timeout = setTimeout(() => {
+      setMemorizeSeconds(0);
+      setPhase('recall');
+      sounds.playTick();
+    }, MEMORIZE_DURATION_MS);
 
-    return () => clearInterval(interval);
+    return () => clearTimeout(timeout);
   }, [isPlaying, targetIndices, phase]);
 
   const handleToggleCell = useCallback((idx: number) => {
@@ -53,7 +53,7 @@ export const Game09MemoryGrid: React.FC<Props> = ({ isPlaying, onFinish, timeLef
       if (prev.includes(idx)) {
         next = prev.filter((i) => i !== idx);
       } else {
-        if (prev.length >= 6) return prev; // max 6 picks
+        if (prev.length >= TARGET_CELLS) return prev;
         next = [...prev, idx];
       }
       return next;
@@ -66,12 +66,12 @@ export const Game09MemoryGrid: React.FC<Props> = ({ isPlaying, onFinish, timeLef
 
     const correctPicks = selectedIndices.filter((idx) => targetIndices.includes(idx)).length;
 
-    if (correctPicks >= 5) {
+    if (correctPicks >= REQUIRED_CORRECT) {
       sounds.playSuccess();
-      onFinish(true, `Trí nhớ siêu đẳng! Bạn đã đoán đúng ${correctPicks}/6 ô sáng!`);
+      onFinish(true, `Trí nhớ siêu đẳng! Bạn đã đoán đúng ${correctPicks}/${TARGET_CELLS} ô sáng!`);
     } else {
       sounds.playFail();
-      onFinish(false, `Chưa đạt! Bạn chọn đúng ${correctPicks}/6 ô (yêu cầu ít nhất 5/6).`);
+      onFinish(false, `Chưa đạt! Bạn chọn đúng ${correctPicks}/${TARGET_CELLS} ô (yêu cầu ít nhất ${REQUIRED_CORRECT}/${TARGET_CELLS}).`);
     }
   }, [phase, selectedIndices, targetIndices, onFinish]);
 
@@ -93,20 +93,20 @@ export const Game09MemoryGrid: React.FC<Props> = ({ isPlaying, onFinish, timeLef
           <div>
             <div className="text-xs font-semibold text-slate-400">Trạng thái</div>
             <div className="text-sm font-bold text-indigo-300">
-              {phase === 'memorize' ? `Ghi nhớ ô sáng (${memorizeSeconds}s)` : `Đã chọn: ${selectedIndices.length}/6 ô`}
+              {phase === 'memorize' ? `Ghi nhớ ô sáng (${memorizeSeconds}s)` : `Đã chọn: ${selectedIndices.length}/${TARGET_CELLS} ô`}
             </div>
           </div>
         </div>
 
         <div className="text-right">
           <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">Mục tiêu</div>
-          <div className="text-xs font-bold text-amber-300">Đúng ít nhất 5/6 ô</div>
+          <div className="text-xs font-bold text-amber-300">Đúng ít nhất {REQUIRED_CORRECT}/{TARGET_CELLS} ô</div>
         </div>
       </div>
 
-      {/* 4x4 Grid Matrix */}
-      <div className="grid grid-cols-4 gap-3.5 p-5 bg-gradient-to-b from-slate-900 to-slate-950 rounded-3xl border border-slate-800 shadow-2xl mb-5">
-        {Array.from({ length: 16 }).map((_, idx) => {
+      {/* 5x5 Grid Matrix */}
+      <div className="grid grid-cols-5 gap-2.5 p-4 bg-gradient-to-b from-slate-900 to-slate-950 rounded-3xl border border-slate-800 shadow-2xl mb-5">
+        {Array.from({ length: TOTAL_CELLS }).map((_, idx) => {
           const isTarget = targetIndices.includes(idx);
           const isSelected = selectedIndices.includes(idx);
           const isCorrect = isTarget && isSelected;
@@ -137,7 +137,7 @@ export const Game09MemoryGrid: React.FC<Props> = ({ isPlaying, onFinish, timeLef
               id={`grid-cell-${idx}`}
               onClick={() => handleToggleCell(idx)}
               disabled={phase !== 'recall'}
-              className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl border-2 transition-all duration-150 flex items-center justify-center font-bold text-xl cursor-pointer ${cellClass}`}
+              className={`w-12 h-12 sm:w-16 sm:h-16 rounded-xl border-2 transition-all duration-150 flex items-center justify-center font-bold text-lg cursor-pointer ${cellClass}`}
             >
               {phase === 'memorize' && isTarget && '💡'}
               {phase === 'recall' && isSelected && '✓'}
@@ -158,7 +158,7 @@ export const Game09MemoryGrid: React.FC<Props> = ({ isPlaying, onFinish, timeLef
           className="w-full py-4 rounded-2xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 active:scale-95 text-white font-black text-lg tracking-wider shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 cursor-pointer border border-indigo-400/40 transition-transform disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <CheckCircle2 className="w-5 h-5" />
-          XÁC NHẬN KẾT QUẢ ({selectedIndices.length}/6 Ô)
+          XÁC NHẬN KẾT QUẢ ({selectedIndices.length}/{TARGET_CELLS} Ô)
         </button>
       )}
     </div>

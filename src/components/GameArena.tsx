@@ -13,7 +13,6 @@ import { Game07BugSmash } from './games/Game07BugSmash';
 import { Game08Stopwatch } from './games/Game08Stopwatch';
 import { Game09MemoryGrid } from './games/Game09MemoryGrid';
 import { Game10ColorConfusion } from './games/Game10ColorConfusion';
-import { Game12Riddles } from './games/Game12Riddles';
 import { Game13QuickCount } from './games/Game13QuickCount';
 
 interface Props {
@@ -117,7 +116,6 @@ export const GameArena: React.FC<Props> = ({
       case 'stop-at-5': return <Game08Stopwatch {...props} />;
       case 'memory-grid': return <Game09MemoryGrid {...props} />;
       case 'color-confusion': return <Game10ColorConfusion {...props} />;
-      case 'smart-riddles': return <Game12Riddles {...props} />;
       case 'quick-count': return <Game13QuickCount {...props} />;
       default: return <div>Trò chơi đang chuẩn bị...</div>;
     }
@@ -305,7 +303,7 @@ export const GameArena: React.FC<Props> = ({
                 onClick={onBack}
                 className="w-full py-2.5 rounded-xl text-slate-400 hover:text-slate-200 text-xs font-semibold transition-colors cursor-pointer"
               >
-                Trở về danh sách 10 Minigames
+                Trở về danh sách 9 Minigames
               </button>
             </div>
           </div>
@@ -353,7 +351,7 @@ export const GameArena: React.FC<Props> = ({
                 onClick={onBack}
                 className="w-full py-2.5 rounded-xl text-slate-400 hover:text-slate-200 text-xs font-semibold transition-colors cursor-pointer"
               >
-                Trở về danh sách 10 Minigames
+                Trở về danh sách 9 Minigames
               </button>
             </div>
           </div>
